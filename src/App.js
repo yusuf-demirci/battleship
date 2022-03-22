@@ -1,25 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import Button from "./components/Button/Button";
+import Gameboard from "./components/Gameboard/Gameboard";
+import Report from "./components/Report/Report";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="container">
+            <h1>Battleship</h1>
+            <Report />
+            <div className="control-buttons">
+                <Button className="rotate" name={"Rotate"} />
+                <Button className="reset" name={"Reset"} />
+            </div>
+
+            <Gameboard />
+        </div>
+    );
 }
 
 export default App;

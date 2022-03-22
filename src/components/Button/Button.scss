@@ -1,0 +1,14 @@
+.rotate, .reset {
+    padding: 0.5rem 1rem;
+    font-size: 1.5rem;
+    border-radius: 5px;
+    color: $primary-color;
+    border-color: $text-color;
+    background-color: $text-color;
+    transition: all ease-in-out 300ms;
+
+    &:hover {
+        color: $text-color;
+        background-color: $primary-color;
+    }
+}
