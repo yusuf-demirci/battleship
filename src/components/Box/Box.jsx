@@ -1,8 +1,8 @@
 
 
-const Box = ({num}) => {
+const Box = ({id, num, func}) => {
   return (
-      <div className="box"></div>
+      <div id={id} className="box" onMouseEnter={func} ></div>
   )
 }
 
