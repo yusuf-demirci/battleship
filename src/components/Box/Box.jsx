@@ -1,9 +1,16 @@
 
+const Box = ({ num, bgColor, funcOver, funcClick }) => {
+    return (
+        <div
+            id={num}
+            className="box"
+            onMouseEnter={() => funcOver(num)}
+            onClick={() => funcClick(num)}
+            style={{
+                backgroundColor: `${bgColor}`,
+            }}
+        ></div>
+    );
+};
 
-const Box = ({id, num, func}) => {
-  return (
-      <div id={id} className="box" onMouseEnter={func} ></div>
-  )
-}
-
-export default Box
+export default Box;

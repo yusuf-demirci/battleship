@@ -1,18 +1,25 @@
-import Box from "../Box/Box"
-import GameContext from "../../context/GameContext"
-import { useContext } from "react"
+import Box from "../Box/Box";
+import GameContext from "../../context/GameContext";
+import { useContext } from "react";
 
 const Gameboard = () => {
+    const { boxList, handleMouseOver, handleMouseClick } =
+        useContext(GameContext);
 
-  const {handleMouseOver} = useContext(GameContext)
+    return (
+        <div className="gameboard">
+            {boxList.map((item, index) => (
+                <Box
+                    key={index}
+                    num={index}
+                    funcOver={handleMouseOver}
+                    funcClick={handleMouseClick}
+                    status={item.status}
+                    bgColor={item.bgColor}
+                />
+            ))}
+        </div>
+    );
+};
 
-  return (
-      <div className="gameboard">
-      {Array(100).fill().map((item, index) => (
-            <Box key={index} id={index} num={index + 1} func={handleMouseOver} />
-          ))}
-      </div>
-  )
-}
-
-export default Gameboard
+export default Gameboard;
