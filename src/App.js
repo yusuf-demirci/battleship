@@ -1,11 +1,12 @@
 import Button from "./components/Button/Button";
-import Gameboard from "./components/Gameboard/Gameboard";
 import Report from "./components/Report/Report";
+import UserGameboard from "./components/UserGameboard/UserGameboard";
 import GameContext from "./context/GameContext";
 import { useContext } from "react";
+import CompGameboard from "./components/CompGameboard/CompGameboard";
 
 function App() {
-    const { handleRotation } = useContext(GameContext);
+    const { handleRotation, gameStatus } = useContext(GameContext);
 
     return (
         <div className="container">
@@ -20,7 +21,8 @@ function App() {
                 <Button className="reset" name={"Reset"} />
             </div>
 
-            <Gameboard />
+            {gameStatus === "play" && <CompGameboard />}
+            <UserGameboard />
         </div>
     );
 }

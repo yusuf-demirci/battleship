@@ -2,6 +2,8 @@
 @import "./abstracts/mixin", "./abstracts/variables";
 @import "./App";
 @import "../components/Gameboard/Gameboard";
+@import "../components/UserGameboard/UserGameboard";
+@import "../components/CompGameboard/CompGameboard";
 @import "../components/Box/Box";
 @import "../components/Report/Report";
 @import "../components/Button/Button";

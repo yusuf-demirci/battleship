@@ -1,8 +1,17 @@
 .gameboard {
-    // border: 2px solid white;
     width: 30rem;
     height: 30rem;
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 0.2rem;
+    transition: transform ease-in-out 1000ms;
+}
+
+.comp-board {
+    position: absolute;
+    top: 30%;
+}
+
+.user-board {
+    transform: translateY(110%);
 }
