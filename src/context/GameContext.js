@@ -1,10 +1,17 @@
-import { createContext, useEffect, useState } from "react";
+import {
+    createContext,
+    useEffect,
+    useState,
+    useRef,
+    useLayoutEffect,
+} from "react";
 import { shipList } from "../helper/ships";
 
 const GameContext = createContext();
+let fullAdjacentCoords = [];
 
 export const GameProvider = ({ children }) => {
-    const [userBoxList, setBoxList] = useState(
+    const [userBoxList, setUserBoxList] = useState(
         Array(100).fill({
             status: "empty",
             bgColor: "#051367",
@@ -19,9 +26,9 @@ export const GameProvider = ({ children }) => {
         })
     );
     const [userShip, setUserShip] = useState(shipList[0]);
-    // const [compShip, setCompShip] = useState(shipList[0]);
+    const [compShip, setCompShip] = useState(shipList[0]);
     const [rotation, setRotation] = useState(true);
-    const [gameStatus, setGameStatus] = useState("play");
+    const [gameStatus, setGameStatus] = useState("deploy");
 
     useEffect(() => {
         if (userShip === undefined) {
@@ -29,69 +36,145 @@ export const GameProvider = ({ children }) => {
         }
     }, [userShip]);
 
-    useEffect(() => {
-        deployCompShips();
-    }, []);
+    const firstUpdate = useRef(true);
+    useLayoutEffect(() => {
+        if (firstUpdate.current) {
+            firstUpdate.current = false;
+            return;
+        }
+        deployCompShip();
+        setCompShip(shipList[shipList.indexOf(compShip) + 1]);
+    }, [userShip]);
 
-    const deployCompShips = () => {
-        let fullCoords = [];
-        shipList.forEach((ship) => {
-            let coords = [];
-            while (true) {
-                coords = [];
-                let coord = Math.floor(Math.random() * 100);
-                let rotation = Math.floor(Math.random() * 2);
+    const deployCompShip = () => {
+        if (!compShip) return;
+        let coords = [];
+        let adjacentCoords = [];
 
-                if (rotation === 1) {
-                    if (
-                        (coord % 10) + ship.length <= 10 &&
-                        fullCoords.every((num) =>
-                            !([coord, coord + 1, coord + 2, coord + 3, coord + 4]
-                                .slice(0, ship.length)
-                                .includes(num))
-                        )
-                    ) {
-                        for (let i = 0; i < ship.length; i++) {
-                            coords.push(coord + i);
-                        }
-                        break;
+        while (true) {
+            coords = [];
+            let coord = Math.floor(Math.random() * 100);
+            let rotation = Math.floor(Math.random() * 2);
+
+            if (rotation === 1) {
+                if (
+                    (coord % 10) + compShip.length <= 10 &&
+                    fullAdjacentCoords.every(
+                        (num) =>
+                            ![
+                                coord,
+                                coord + 1,
+                                coord + 2,
+                                coord + 3,
+                                coord + 4,
+                            ].includes(num)
+                    )
+                ) {
+                    adjacentCoords = [
+                        [coord, coord + 1, coord - 1, coord + 10, coord - 10],
+                        [
+                            coord + 1 + 1,
+                            coord + 1 - 1,
+                            coord + 1 + 10,
+                            coord + 1 - 10,
+                        ],
+                        [
+                            coord + 2 + 1,
+                            coord + 2 - 1,
+                            coord + 2 + 10,
+                            coord + 2 - 10,
+                        ],
+                        [
+                            coord + 3 + 1,
+                            coord + 3 - 1,
+                            coord + 3 + 10,
+                            coord + 3 - 10,
+                        ],
+                        [
+                            coord + 4 + 1,
+                            coord + 4 - 1,
+                            coord + 4 + 10,
+                            coord + 4 - 10,
+                        ],
+                    ].slice(0, compShip.length + 1);
+                    for (let i = 0; i < compShip.length; i++) {
+                        coords.push(coord + i);
                     }
-                } else {
-                    if ((coord + (ship.length - 1) * 10 <= 99) &&
-                        fullCoords.every((num) =>
-                            !([coord, coord + 10, coord + 20, coord + 30, coord + 40]
-                                .slice(0, ship.length)
-                                .includes(num))
-                        )) {
-                        for (let i = 0; i < ship.length; i++) {
-                            coords.push(coord + i * 10);
-                        }
-                        break;
+                    break;
+                }
+            } else {
+                if (
+                    coord + (compShip.length - 1) * 10 <= 99 &&
+                    fullAdjacentCoords.every(
+                        (num) =>
+                            ![
+                                coord,
+                                coord + 10,
+                                coord + 20,
+                                coord + 30,
+                                coord + 40,
+                            ].includes(num)
+                    )
+                ) {
+                    adjacentCoords = [
+                        [coord, coord + 1, coord - 1, coord + 10, coord - 10],
+                        [
+                            coord + 10,
+                            coord + 10 + 1,
+                            coord + 10 - 1,
+                            coord + 10 + 10,
+                            coord + 10 - 10,
+                        ],
+                        [
+                            coord + 20,
+                            coord + 20 + 1,
+                            coord + 20 - 1,
+                            coord + 20 + 10,
+                            coord + 20 - 10,
+                        ],
+                        [
+                            coord + 30,
+                            coord + 30 + 1,
+                            coord + 30 - 1,
+                            coord + 30 + 10,
+                            coord + 30 - 10,
+                        ],
+                        [
+                            coord + 40,
+                            coord + 40 + 1,
+                            coord + 40 - 1,
+                            coord + 40 + 10,
+                            coord + 40 - 10,
+                        ],
+                    ].slice(0, compShip.length + 1);
+                    for (let i = 0; i < compShip.length; i++) {
+                        coords.push(coord + i * 10);
                     }
+                    break;
                 }
             }
+        }
 
-            fullCoords = fullCoords.concat(coords);
-            setCompBoxList(
-                compBoxList.map((box, index) => {
-                    if (fullCoords.includes(index)) {
-                        return {
-                            status: "located",
-                            bgColor: "#D1D1D1",
-                            compShip: ship.name,
-                        };
-                    }
+        fullAdjacentCoords = fullAdjacentCoords.concat(...adjacentCoords);
+
+        setCompBoxList(
+            compBoxList.map((box, index) => {
+                if (coords.includes(index)) {
                     return {
                         ...box,
+                        status: "located",
+                        compShip: compShip.name,
                     };
-                })
-            );
-        });
-        console.log(fullCoords);
+                }
+                return {
+                    ...box,
+                };
+            })
+        );
     };
 
     const handleMouseOverUser = (id) => {
-        setBoxList(
+        setUserBoxList(
             userBoxList.map((box, index) => {
                 if (box.status === "empty" && userShip) {
                     if (rotation) {
@@ -162,7 +245,7 @@ export const GameProvider = ({ children }) => {
     };
 
     const handleMouseClickUser = (id) => {
-        setBoxList(
+        setUserBoxList(
             userBoxList.map((box, index) => {
                 if (rotation) {
                     if (
@@ -212,22 +295,48 @@ export const GameProvider = ({ children }) => {
         }
     };
 
-    // const handleMouseOverComp = (id) => {
-    //     setCompBoxList(
-    //         compBoxList.map((box, index) => {
-    //             if (id === index) {
-    //                 return {
-    //                     ...box,
-    //                     bgColor: "#D1D1D1",
-    //                 };
-    //             }
-    //             return {
-    //                 ...box,
-    //                 bgColor: "#051367",
-    //             };
-    //         })
-    //     );
-    // };
+    const handleMouseOverComp = (id) => {
+        setCompBoxList(
+            compBoxList.map((box, index) => {
+                if (id === index && box.status !== "miss" && box.status !== "hit") {
+                    return {
+                        ...box,
+                        bgColor: "#D1D1D1",
+                    };
+                }
+                else if (box.status === "hit") {
+                    return box
+                }
+                return {
+                    ...box,
+                    bgColor: "#051367"
+                };
+            })
+        );
+    };
+
+    const handleMouseClickComp = (id) => {
+        setCompBoxList(compBoxList.map(((box, index) => {
+            if (id === index) {
+                if (box.status === "located") {
+                    return {
+                        ...box,
+                        status: "hit",
+                        bgColor: "red"
+                    }
+                } else if (box.status === "hit") {
+                    return box
+                }
+                return {
+                    ...box,
+                    status: "miss",
+
+                }
+            }
+
+            return box
+        })))
+    }
 
     const handleRotation = () => {
         setRotation(!rotation);
@@ -237,13 +346,15 @@ export const GameProvider = ({ children }) => {
         <GameContext.Provider
             value={{
                 userBoxList,
+                compBoxList,
                 rotation,
                 gameStatus,
                 compBoxList,
                 handleRotation,
                 handleMouseOverUser,
                 handleMouseClickUser,
-                // handleMouseOverComp,
+                handleMouseOverComp,
+                handleMouseClickComp,
             }}
         >
             {children}

@@ -1,7 +1,20 @@
 .box {
+    position: relative;
     border: 1px solid white;
+}
 
-    &:hover {
-        // background-color: #D1D1D1;
+.miss::before {
+        content: "";
+        position: absolute;
+        top: 40%;
+        left: 35%;
+        background-color: #D1D1D1;
+        border-radius: 50%;
+        height: 0.7rem;
+        width: 0.7rem;
     }
+
+.hit::before {
+    @extend .miss, ::before;
+    background-color: #000;
 }

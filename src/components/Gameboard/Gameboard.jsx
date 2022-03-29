@@ -1,7 +1,6 @@
 import Box from "../Box/Box"
 
 const Gameboard = ({boxList, funcOver, funcClick, className}) => {
-
     return (
         <div className={`gameboard ${className}`}>
             {boxList

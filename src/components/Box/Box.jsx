@@ -1,9 +1,9 @@
 
-const Box = ({ num, bgColor, funcOver, funcClick }) => {
+const Box = ({ num, bgColor, funcOver, funcClick, status }) => {
     return (
         <div
             id={num}
-            className="box"
+            className={`box ${status}`}
             onMouseEnter={() => funcOver(num)}
             onClick={() => funcClick(num)}
             style={{

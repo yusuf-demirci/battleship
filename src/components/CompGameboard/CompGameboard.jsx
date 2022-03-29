@@ -3,14 +3,14 @@ import { useContext } from "react";
 import Gameboard from "../Gameboard/Gameboard";
 
 const CompGameboard = () => {
-    const { compBoxList, handleMouseOverComp } = useContext(GameContext);
+    const { compBoxList, handleMouseOverComp, handleMouseClickComp } = useContext(GameContext);
 
     return (
         <Gameboard
             className="comp-board"
             boxList={compBoxList}
             funcOver={handleMouseOverComp}
-            // funcClick={}
+            funcClick={handleMouseClickComp}
         />
     );
 };
