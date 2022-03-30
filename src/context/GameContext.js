@@ -29,10 +29,17 @@ export const GameProvider = ({ children }) => {
     const [compShip, setCompShip] = useState(shipList[0]);
     const [rotation, setRotation] = useState(true);
     const [gameStatus, setGameStatus] = useState("deploy");
+    const [thinking, setThinking] = useState(false);
+    const [reportText, setReportText] = useState("Welcome to Battleship Game");
 
     useEffect(() => {
         if (userShip === undefined) {
             setGameStatus("play");
+        }
+        if (userShip !== undefined) {
+            setReportText(`Please deploy your ${userShip.name}`);
+        } else {
+            setReportText("Attack the enemy fleet!");
         }
     }, [userShip]);
 
@@ -45,6 +52,23 @@ export const GameProvider = ({ children }) => {
         deployCompShip();
         setCompShip(shipList[shipList.indexOf(compShip) + 1]);
     }, [userShip]);
+
+    useEffect(() => {
+        const userHits = compBoxList.filter((box) => box.status === "hit");
+        const compHits = userBoxList.filter((box) => box.status === "hit");
+
+        if (userHits.length === 17) {
+            setTimeout(() => {
+                alert("You won the game!");
+            }, 200);
+            setGameStatus("gameOver");
+        } else if (compHits.length === 17) {
+            setTimeout(() => {
+                alert("Computer won the game!");
+            }, 200);
+            setGameStatus("gameOver");
+        }
+    }, [compBoxList, userBoxList]);
 
     const deployCompShip = () => {
         if (!compShip) return;
@@ -174,6 +198,8 @@ export const GameProvider = ({ children }) => {
     };
 
     const handleMouseOverUser = (id) => {
+        if (gameStatus !== "deploy") return;
+
         setUserBoxList(
             userBoxList.map((box, index) => {
                 if (box.status === "empty" && userShip) {
@@ -245,6 +271,8 @@ export const GameProvider = ({ children }) => {
     };
 
     const handleMouseClickUser = (id) => {
+        if (gameStatus !== "deploy") return;
+
         setUserBoxList(
             userBoxList.map((box, index) => {
                 if (rotation) {
@@ -296,47 +324,109 @@ export const GameProvider = ({ children }) => {
     };
 
     const handleMouseOverComp = (id) => {
+        if (gameStatus === "gameOver") return;
+
         setCompBoxList(
             compBoxList.map((box, index) => {
-                if (id === index && box.status !== "miss" && box.status !== "hit") {
+                if (
+                    id === index &&
+                    box.status !== "miss" &&
+                    box.status !== "hit"
+                ) {
                     return {
                         ...box,
                         bgColor: "#D1D1D1",
                     };
-                }
-                else if (box.status === "hit") {
-                    return box
+                } else if (box.status === "hit") {
+                    return box;
                 }
                 return {
                     ...box,
-                    bgColor: "#051367"
+                    bgColor: "#051367",
                 };
             })
         );
     };
 
     const handleMouseClickComp = (id) => {
-        setCompBoxList(compBoxList.map(((box, index) => {
-            if (id === index) {
-                if (box.status === "located") {
+        if (gameStatus === "gameOver" || thinking === true) return;
+        if (
+            compBoxList[id].status === "hit" ||
+            compBoxList[id].status === "miss"
+        ) {
+            return;
+        }
+        setCompBoxList(
+            compBoxList.map((box, index) => {
+                if (id === index) {
+                    if (box.status === "located") {
+                        setReportText(`You hit the enemy ${box.compShip}!`);
+                        return {
+                            ...box,
+                            status: "hit",
+                            bgColor: "red",
+                        };
+                    } else if (box.status === "hit") {
+                        return box;
+                    }
+                    setReportText(`It is a miss!`);
                     return {
                         ...box,
-                        status: "hit",
-                        bgColor: "red"
-                    }
-                } else if (box.status === "hit") {
-                    return box
+                        status: "miss",
+                    };
                 }
-                return {
-                    ...box,
-                    status: "miss",
+                return box;
+            })
+        );
+        setThinking(true);
 
-                }
+        if (gameStatus !== "gameOver") {
+            let think = setTimeout(() => {
+                setReportText("Thinking...");
+                let cMove = setTimeout(() => {
+                    compMove();
+                }, 1000);
+            }, 2000);
+        }
+    };
+
+    const compMove = async () => {
+        if (gameStatus === "gameOver") return;
+
+        let randomCoord;
+        while (true) {
+            randomCoord = Math.floor(Math.random() * 100);
+            if (
+                userBoxList[randomCoord].status !== "miss" &&
+                userBoxList[randomCoord].status !== "hit"
+            ) {
+                break;
             }
-
-            return box
-        })))
-    }
+        }
+        setUserBoxList(
+            userBoxList.map((box, index) => {
+                if (randomCoord === index) {
+                    if (box.status === "empty") {
+                        setReportText("Enemy miss!");
+                        return {
+                            ...box,
+                            status: "miss",
+                        };
+                    } else if (box.status === "located") {
+                        setReportText(`Enemy hit your ${box.userShip}!`);
+                        return {
+                            ...box,
+                            status: "hit",
+                            bgColor: "red",
+                        };
+                    }
+                } else {
+                    return box;
+                }
+            })
+        );
+        setThinking(false);
+    };
 
     const handleRotation = () => {
         setRotation(!rotation);
@@ -350,6 +440,7 @@ export const GameProvider = ({ children }) => {
                 rotation,
                 gameStatus,
                 compBoxList,
+                reportText,
                 handleRotation,
                 handleMouseOverUser,
                 handleMouseClickUser,

@@ -1,6 +1,7 @@
 .gameboard {
-    width: 30rem;
-    height: 30rem;
+    width: 25rem;
+    height: 25rem;
+    margin-top: 2rem;
     display: grid;
     grid-template-columns: repeat(10, 1fr);
     gap: 0.2rem;
@@ -9,9 +10,10 @@
 
 .comp-board {
     position: absolute;
-    top: 30%;
+    top: 26.9%;
+    left: 52%;
 }
 
 .user-board {
-    transform: translateY(110%);
+    transform: translateX(-55%);
 }

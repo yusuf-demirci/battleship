@@ -21,7 +21,7 @@ function App() {
                 <Button className="reset" name={"Reset"} />
             </div>
 
-            {gameStatus === "play" && <CompGameboard />}
+            {gameStatus !== "deploy" && <CompGameboard />}
             <UserGameboard />
         </div>
     );

@@ -8,7 +8,7 @@ const UserGameboard = () => {
 
     return (
         <Gameboard
-            className={gameStatus === "play" && "user-board"}
+            className={gameStatus !== "deploy" && "user-board"}
             boxList={userBoxList}
             funcOver={handleMouseOverUser}
             funcClick={handleMouseClickUser}

@@ -1,9 +1,10 @@
-
+import GameContext from "../../context/GameContext";
+import { useContext } from "react";
 
 const Report = () => {
-  return (
-    <div className="report">Welcome to Battleship Game!</div>
-  )
-}
+    const { reportText } = useContext(GameContext);
 
-export default Report
+    return <div className="report">{reportText}</div>;
+};
+
+export default Report;
